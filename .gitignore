@@ -2,3 +2,4 @@ apikey.py
 subway/
 learningdata/
 models/
+__pycache__/
