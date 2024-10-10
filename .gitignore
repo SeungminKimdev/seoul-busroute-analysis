@@ -1,5 +1,3 @@
 apikey.py
-subway/
-learningdata/
-models/
 __pycache__/
+deeplearning/data/
