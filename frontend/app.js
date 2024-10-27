@@ -35,25 +35,31 @@ $(document).ready(function () {
         alert('지하철 역을 클릭하여 예측을 확인하세요.');
     });
 
-    // SVG 이동 및 확대/축소 기능
+    // SVG 배경 이동 기능 (내가 보는 윈도우를 움직이는 방식)
     const svgElement = document.getElementById('seoul-subway');
     let isPanning = false;
     let startX, startY;
+    let viewBoxX = 0, viewBoxY = 0;
     let scale = 1;
     const svgContainer = document.getElementById('subway-map-container');
 
     svgContainer.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // 좌클릭만 처리
         isPanning = true;
-        startX = e.clientX - svgElement.getBoundingClientRect().x;
-        startY = e.clientY - svgElement.getBoundingClientRect().y;
+        startX = e.clientX;
+        startY = e.clientY;
     });
 
     svgContainer.addEventListener('mousemove', (e) => {
         if (!isPanning) return;
         e.preventDefault();
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        svgElement.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        const dx = (e.clientX - startX) / scale;
+        const dy = (e.clientY - startY) / scale;
+        viewBoxX -= dx;
+        viewBoxY -= dy;
+        svgElement.setAttribute('viewBox', `${viewBoxX} ${viewBoxY} 800 600`);
+        startX = e.clientX;
+        startY = e.clientY;
     });
 
     svgContainer.addEventListener('mouseup', () => {
@@ -69,6 +75,6 @@ $(document).ready(function () {
         const wheelDelta = e.deltaY * -0.001;
         scale += wheelDelta;
         scale = Math.min(Math.max(0.5, scale), 3);
-        svgElement.style.transform = `scale(${scale})`;
+        svgElement.setAttribute('viewBox', `${viewBoxX} ${viewBoxY} ${800 / scale} ${600 / scale}`);
     });
 });
